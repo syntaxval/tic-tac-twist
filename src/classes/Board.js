@@ -8,8 +8,8 @@ class Board {
 
 
     /**
-     * @param {Number} size Integer between 3 and 10 specifying the size of the
-     *  `Board`
+     * @param {number} size Integer between 3 and 10 specifying the size of the
+     *  `Board`.
      */
     constructor (size = 3) {
 
@@ -109,7 +109,7 @@ class Board {
 
     /**
      * Prints the `Board` in the terminal.
-     * @returns {undefined}
+     * @returns {Board}
      */
     print () {
 
@@ -147,6 +147,10 @@ class Board {
 
         // eslint-disable-next-line no-console
         console.log(boardElements)
+
+
+        // allow for method chaining
+        return this
     }
 
 
@@ -176,6 +180,10 @@ class Board {
 
     /**
      * Inserts a `Symbol` at the given `Board` index.
+     * @param {string} symbol Character that should represent particular
+     *  player's moves.
+     * @param {number} index Linear coordinate where on the `Board` the symbol
+     *  should be placed.
      * @returns {boolean}
      */
     insert (symbol, index) {
