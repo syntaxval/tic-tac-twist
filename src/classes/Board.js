@@ -8,7 +8,8 @@ class Board {
 
 
     /**
-     * @param {Number} size Integer between 3 and 10 specifying the size of the `Board`
+     * @param {Number} size Integer between 3 and 10 specifying the size of the
+     *  `Board`
      */
     constructor (size = 3) {
 
@@ -31,6 +32,76 @@ class Board {
         for (let i = 0; i < this.cellCount; i++) {
             this.state.push("")
         }
+
+
+
+
+        // private method returning 2D `Array` of rows of the `Board`
+        this.getRows = function getRows ()  {
+
+            let rowIndices = []
+            let rowIndicesMatrix = []
+
+            for (let i = 1; i <= this.cellCount; i++) {
+                rowIndices.push(i-1)
+                if (i % size === 0) {
+                    rowIndicesMatrix.push(rowIndices.slice())
+                    rowIndices = []
+                }
+            }
+
+            return rowIndicesMatrix
+        }
+
+
+
+
+        // private method returning 2D `Array` of columns of the `Board`
+        this.getColumns = function getColumns () {
+            const rows = this.getRows()
+
+            // transpose the rows matrix to get columns matrix
+            // `idx` is really the element value but it is the same as index
+            return rows[0].map((idx) => rows.map((row) => row[idx]))
+        }
+
+
+
+
+        // private method returning 2D `Array` of the diagonals of the `Board`
+        this.getDiagonals = function getDiagonals () {
+            const rows = this.getRows()
+
+            // get two diagonals of the square matrix
+            return [
+                rows[0].map((idx) => rows[idx][idx]),
+                rows[0].map((idx) => rows[idx][this.size - idx - 1]),
+            ]
+        }
+
+
+
+
+        // Private helper method for checking if there is a possible winner
+        // at either row, column or diagonal cells. `matrix` is a 2D `Array`
+        // of indices representing a row, column or diagonal cells.
+        this.declareWinner = function declareWinner (matrix) {
+
+            // compare if all "symbols" are the same at every matrix[i]
+            // i.e. if row[0] === row[1] === row[2] or
+            // column[0] === column[3] === column[6] or
+            // diagonal[0] === diagonal[4] === diagonal[8] etc.
+            for (let i = 0; i < matrix.length; i++) {
+                if (matrix[i].every(
+                    (idx) => this.state[matrix[0][0]] === this.state[idx]
+                )) {
+                    return matrix[i]
+                }
+            }
+
+        }
+
+
     }
 
 
@@ -117,6 +188,63 @@ class Board {
         this.state[index] = symbol
         return true
 
+    }
+
+
+
+
+    /**
+     * Provides an `Array` of empty cell indices signifying possible "moves".
+     * @returns {array}
+     */
+    getEmptyCells () {
+        return this.state.map((cell, idx) => {
+            if (!cell) {
+                return idx
+            }
+        }).filter((cell) => cell !== undefined)
+    }
+
+
+
+
+    /**
+     * Checks for a possible win or a draw.
+     * @returns {boolean}
+     */
+    isGameOver () {
+
+        // looks like the game has just begun
+        if (this.isEmpty()) return false
+
+
+
+
+        // state machine - check for possible winner
+        let winner
+
+        winner = this.declareWinner(this.getRows())
+
+        if (winner) return winner // "row" winner was found
+
+
+        winner = this.declareWinner(this.getColumns())
+
+        if (winner) return winner // "column" winner was found
+
+
+        winner = this.declareWinner(this.getDiagonals())
+
+        if (winner) return winner // "diagonal" winner was found
+
+
+        // looks like a "draw"
+        // TODO: revisit later. Maybe this check can happen elsewhere
+        if (this.isFull()) return []
+
+
+        // for now returning this.
+        return []
     }
 
 }

@@ -13,6 +13,23 @@ var
 
 
 
+// ...
+function declareWinner (winner) {
+
+    const board3x3 = new Board(3)
+
+    winner.forEach((idx) => board3x3.insert("x", idx))
+
+    it("should return a winner", () => {
+        assert.ok(JSON.stringify(
+            board3x3.isGameOver()
+        ) === JSON.stringify(
+            winner
+        ))
+    })
+}
+
+
 
 
 // instantiate Board with valid/invalid sizes
@@ -91,17 +108,17 @@ describe("Board instantiation.", () => {
 
 
 
-// instance methods
+
 describe("Instance methods.", () => {
 
-    var board = new Board(5)
+    const board5x5 = new Board(5)
 
 
     // ...
     describe("Empty Board", () => {
 
         it("should return true on isEmpty check", () => {
-            assert.ok(board.isEmpty())
+            assert.ok(board5x5.isEmpty())
         })
 
     })
@@ -111,17 +128,54 @@ describe("Instance methods.", () => {
     describe("Insert Symbol at 0", () => {
 
         it("should return true", () => {
-            assert.ok(board.insert("✹", 0))
+            assert.ok(board5x5.insert("✹", 0))
         })
 
         it("should return false on already occupied cell", () => {
-            assert.ok(!board.insert("✹", 0))
+            assert.ok(!board5x5.insert("✹", 0))
         })
 
         it("should return false on out of bounds index", () => {
-            assert.ok(!board.insert("✹", 200))
+            assert.ok(!board5x5.insert("✹", 200))
         })
 
     })
+
+
+
+
+    // ...
+    describe("Get empty cells after insertions", () => {
+        const board3x3 = new Board(3)
+        board3x3.insert("x", 0)
+        it("should return remaining empty cells", () => {
+            assert.ok(JSON.stringify(
+                board3x3.getEmptyCells()
+            ) === JSON.stringify(
+                [1,2,3,4,5,6,7,8]
+            ))
+        })
+    })
+
+
+
+
+    // ...
+    describe("We have a row winner", () => declareWinner([0,1,2]))
+
+
+
+
+    // ...
+    describe("We have a column winner", () => declareWinner([0,3,6]))
+
+
+
+
+    // ...
+    describe("We have a diagonal winner", () => declareWinner([0,4,8]))
+
+
+
 
 })
