@@ -1,0 +1,19 @@
+{
+  "name": "tic-tac-toe",
+  "version": "0.1.0",
+  "private": true,
+  "engines": {
+    "node": ">=8.10.0"
+  },
+  "scripts": {
+    "start": "node ./src/index.js",
+    "test": "mocha --reporter nyan",
+    "jsdoc": "echo \"Generating jsdoc ...\" && rm -rf ./docs && jsdoc -c ./jsdoc.conf.json -R ./README.md"
+  },
+  "devDependencies": {
+    "eslint": "^5.16.0",
+    "eslint-plugin-node": "^9.1.0",
+    "jsdoc": "^3.6.2",
+    "mocha": "^6.1.4"
+  }
+}

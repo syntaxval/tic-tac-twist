@@ -1,0 +1,10 @@
+{
+    "playgroundSize": "3",
+    "players": {
+        "1": "✹",
+        "2": "✤",
+        "3": "✇"
+    },
+    "isRobot": "2",
+    "maxDepth": "5"
+}
