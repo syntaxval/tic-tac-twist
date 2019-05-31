@@ -1,10 +1,9 @@
 {
-    "playgroundSize": "3",
-    "players": {
-        "1": "✹",
-        "2": "✤",
-        "3": "✇"
+    "boardSize": 3,
+    "symbols": {
+        "human1": "✹",
+        "human2": "✤",
+        "computer": "❤"
     },
-    "isRobot": "2",
     "maxDepth": "5"
 }
