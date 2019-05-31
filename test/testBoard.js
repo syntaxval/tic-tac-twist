@@ -13,18 +13,18 @@ var
 
 
 
-// ...
-function declareWinner (winner) {
+// helper function
+function declareWinner (cells, type, symbol) {
 
     const board3x3 = new Board(3)
 
-    winner.forEach((idx) => board3x3.insert("x", idx))
+    cells.forEach((idx) => board3x3.insert(symbol, idx))
 
     it("should return a winner", () => {
         assert.ok(JSON.stringify(
-            board3x3.isGameOver()
+            board3x3.getOutcome()
         ) === JSON.stringify(
-            winner
+            {winner: {cells, symbol}, type, gameOver: true}
         ))
     })
 }
@@ -161,19 +161,28 @@ describe("Instance methods.", () => {
 
 
     // ...
-    describe("We have a row winner", () => declareWinner([0,1,2]))
+    describe(
+        "We have a row winner",
+        () => declareWinner([0,1,2], "row", "✹")
+    )
 
 
 
 
     // ...
-    describe("We have a column winner", () => declareWinner([0,3,6]))
+    describe(
+        "We have a column winner",
+        () => declareWinner([0,3,6], "column", "x")
+    )
 
 
 
 
     // ...
-    describe("We have a diagonal winner", () => declareWinner([0,4,8]))
+    describe(
+        "We have a diagonal winner",
+        () => declareWinner([0,4,8], "diagonal", "@")
+    )
 
 
 

@@ -1,6 +1,15 @@
 "use strict"
 
 
+// Declare some globals.
+const
+    config = require("../../config"),
+    minBoardSize = 3,
+    maxBoardSize = 10
+
+
+
+
 /**
  * @desc Represents _Tic-Tac-Toe_ `Board`.
  */
@@ -11,10 +20,13 @@ class Board {
      * @param {number} size Integer between 3 and 10 specifying the size of the
      *  `Board`.
      */
-    constructor (size = 3) {
+    constructor (size = config.boardSize) {
 
         // allow only valid Board sizes
-        if (typeof size !== "number" || size < 3 || size > 10) {
+        if (typeof size !== "number" ||
+            size < minBoardSize ||
+            size > maxBoardSize
+        ) {
             throw new Error("Invalid Board size.")
         }
 
@@ -95,7 +107,10 @@ class Board {
                 if (matrix[i].every(
                     (idx) => this.state[matrix[0][0]] === this.state[idx]
                 )) {
-                    return matrix[i]
+                    return ({
+                        cells: matrix[i],
+                        symbol: this.state[matrix[0][0]],
+                    })
                 }
             }
 
@@ -104,6 +119,9 @@ class Board {
 
     }
 
+    setState (state) {
+        this.state = state
+    }
 
 
 
@@ -220,7 +238,7 @@ class Board {
      * Checks for a possible win or a draw.
      * @returns {boolean}
      */
-    isGameOver () {
+    getOutcome () {
 
         // looks like the game has just begun
         if (this.isEmpty()) return false
@@ -231,28 +249,32 @@ class Board {
         // state machine - check for possible winner
         let winner
 
+
         winner = this.declareWinner(this.getRows())
 
-        if (winner) return winner // "row" winner was found
+        // "row" winner was found
+        if (winner) return ({ winner, type: "row", gameOver: true })
 
 
         winner = this.declareWinner(this.getColumns())
 
-        if (winner) return winner // "column" winner was found
+        // "column" winner was found
+        if (winner) return ({ winner, type: "column", gameOver: true })
 
 
         winner = this.declareWinner(this.getDiagonals())
 
-        if (winner) return winner // "diagonal" winner was found
+        // "diagonal" winner was found
+        if (winner) return ({ winner, type: "diagonal", gameOver: true })
 
 
         // looks like a "draw"
         // TODO: revisit later. Maybe this check can happen elsewhere
-        if (this.isFull()) return []
+        if (this.isFull()) return ({ winner: {}, type: "draw", gameOver: true })
 
 
         // for now returning this.
-        return []
+        return ({ winner: {}, gameOver: false })
     }
 
 }
