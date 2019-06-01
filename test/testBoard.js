@@ -187,4 +187,18 @@ describe("Instance methods.", () => {
 
 
 
+    // ...
+    describe("Game is ongoing", () => {
+        const board3x3 = new Board(3)
+        board3x3.insert("x", 0)
+        it("should return proper object", () => {
+            assert.ok(JSON.stringify(
+                board3x3.getOutcome()
+            ) === JSON.stringify(
+                { winner: {}, gameOver: false }
+            ))
+        })
+    })
+
+
 })
