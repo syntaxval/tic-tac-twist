@@ -10,6 +10,27 @@ const
     })
 
 
+function isGameOver (board) {
+    return board.getOutcome().gameOver
+}
+
+function printGameScore (board) {
+    if (board.getOutcome.type === "draw") {
+        // eslint-disable-next-line no-console
+        console.log("It's a draw!")
+    } else {
+        // eslint-disable-next-line no-console
+        console.log("Winner:", board.getOutcome().winner)
+        board.print()
+    }
+}
+
+
+function exitGame () {
+    readline.close()
+}
+
+
 function playTurn (board, player, turn = "1") {
 
     const playerAlias = {
@@ -21,32 +42,41 @@ function playTurn (board, player, turn = "1") {
 
     readline.question(`${playerAlias[turn]} > `, (move) => {
         if (move == "exit" || move === "quit"){
-            readline.close()
-        } else {
+            exitGame()
+        }
+
+
+
+        if (isGameOver(board)) {
+            printGameScore(board)
+            exitGame()
+            return
+        }
+
+        else {
             // eslint-disable-next-line no-console
             console.log(`${playerAlias[turn]} entered ${move}`)
+
+
+
 
 
             // Player 1
             if (turn === "1") {
                 board.insert(config.symbols["human1"], move)
                 board.print()
-                // turn = "2"
-                // playTurn(board, player, turn)
 
-                /************* TEST */
-                if (board.getOutcome().gameOver) {
-                    if (board.getOutcome().type === "draw") {
-                        console.log("It's a draw!")
-                    } else {
-                        console.log("Winner: ", board.getOutcome().winner)
-                    }
-                    readline.close()
-                } else {
+                if (isGameOver(board)) {
+                    printGameScore(board)
+                    exitGame()
+                    return
+                }
+                else {
                     turn = "2"
                     playTurn(board, player, turn)
                 }
-                /************* TEST */
+
+
 
             }
 
@@ -57,73 +87,39 @@ function playTurn (board, player, turn = "1") {
 
 
 
-                /************* TEST */
-                if (board.getOutcome().gameOver) {
-                    if (board.getOutcome().type === "draw") {
-                        console.log("It's a draw!")
-                    } else {
-                        console.log("Winner: ", board.getOutcome().winner)
-                    }
-                    readline.close()
-                } else {
-                    turn = "1"
-                    playTurn(board, player, turn)
-                }
-                /************* TEST */
 
+                player.minimax(
+                    board,
+                    config.maxDepth,
+                    true,
+                    config.symbols["human1"],
+                    bestIndex => {
+                        const human1 = bestIndex
+                        player.minimax(
+                            board,
+                            config.maxDepth,
+                            true,
+                            config.symbols["human2"],
+                            bestIndex => {
+                                const human2 = bestIndex
 
-                // scenario with computer + 2 players
+                                board.insert(config.symbols["computer"], Math.max(human1, human2))
+                                board.print()
 
-                // player.findBestMove(board, true, bestIndex => {
-                //     board.insert(config.symbols["computer"], bestIndex)
-                //     board.print()
-                //     // eslint-disable-next-line no-console
-                //     console.log(`Computer played: ${bestIndex}`)
+                                if (isGameOver(board)) {
+                                    printGameScore(board)
+                                    exitGame()
+                                    return
+                                } else {
+                                    turn = "1"
+                                    playTurn(board, player, turn)
+                                }
 
-                //     if (board.getOutcome().gameOver) {
-                //         if (board.getOutcome().winner) {
-                //             // eslint-disable-next-line no-console
-                //             console.log("We have a winner!", board.getOutcome())
-                //         } else {
-                //             // eslint-disable-next-line no-console
-                //             console.log("It's a draw!")
-                //         }
+                            })
+                    })
 
-                //         readline.close()
-                //     } else {
-                //         turn = "1"
-                //         playTurn(board, player, turn)
-                //     }
-                // })
 
             }
-
-
-
-            //  else {
-            //     player.findBestMove(board, true, bestIndex => {
-            //         board.insert(config.symbols["computer"], bestIndex)
-            //         board.print()
-            //         // eslint-disable-next-line no-console
-            //         console.log(`Computer played: ${bestIndex}`)
-
-            //         if (board.getOutcome().gameOver) {
-            //             console.log("Computer Won!", board.getOutcome().winner)
-            //         }
-            //     })
-
-
-            //     if (Math.round(Math.random()) === 1) {
-            //         // eslint-disable-next-line no-console
-            //         console.log("Computer won!")
-            //         readline.close()
-            //     } else {
-            //         turn = "1"
-            //         playTurn(board, player, turn)
-            //     }
-
-
-            // }
 
         }
     })
@@ -134,10 +130,10 @@ function newGame () {
     let player = new Player()
     let board = new Board()
 
-    // let firstMove = Math.floor(Math.random() * board.getEmptyCells().length)
+    let firstMove = Math.floor(Math.random() * board.getEmptyCells().length)
 
-    // board.insert(config.symbols["computer"], firstMove)
-    // board.print()
+    board.insert(config.symbols["computer"], firstMove)
+    board.print()
 
 
     playTurn(board, player)
@@ -146,13 +142,6 @@ function newGame () {
 
 
 try {
-    // const board = new Board(parseInt(config.boardSize, 10))
-    // const player = new Player()
-
-    // board.print().insert("✹", "0")
-    // board.print().insert("✹", "3")
-    // board.print().insert("✹", "6")
-    // board.print()
 
     newGame()
 
