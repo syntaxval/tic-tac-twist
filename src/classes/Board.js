@@ -99,7 +99,8 @@ class Board {
         // of indices representing a row, column or diagonal cells.
         this.declareWinner = function declareWinner (matrix) {
 
-            // compare if all "symbols" are the same at every matrix[i]
+            // compare if all (non-empty) "symbols" are the same at
+            // every matrix[i] `Array`
             // i.e. if row[0] === row[1] === row[2] or
             // column[0] === column[3] === column[6] or
             // diagonal[0] === diagonal[4] === diagonal[8] etc.
