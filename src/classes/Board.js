@@ -105,11 +105,16 @@ class Board {
             // diagonal[0] === diagonal[4] === diagonal[8] etc.
             for (let i = 0; i < matrix.length; i++) {
                 if (matrix[i].every(
-                    (idx) => this.state[matrix[0][0]] === this.state[idx]
+                    (idx) => {
+                        if (this.state[matrix[i][0]] === "") {
+                            return false
+                        }
+                        return this.state[matrix[i][0]] === this.state[idx]
+                    }
                 )) {
                     return ({
                         cells: matrix[i],
-                        symbol: this.state[matrix[0][0]],
+                        symbol: this.state[matrix[i][0]],
                     })
                 }
             }
