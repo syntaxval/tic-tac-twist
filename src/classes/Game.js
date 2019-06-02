@@ -1,8 +1,4 @@
-const config = require("../../config"),
-    readline = require("readline").createInterface({
-        input: process.stdin,
-        output: process.stdout,
-    })
+const config = require("../../config")
 
 
 
@@ -191,12 +187,15 @@ class Game {
 
     /**
      * Starts the game.
+     * @returns {Game}
      */
     start () {
+
 
         // eslint-disable-next-line no-console
         console.log("\nWelcome to Tic-Tac-Toe! The players are:\n")
 
+        // introduce the players
         this.players.forEach((player) => {
             // eslint-disable-next-line no-console
             console.log(
@@ -209,6 +208,7 @@ class Game {
         })
 
 
+        // allow for the computer to go first
         let turn = this.turns.COMPUTER
 
         const
@@ -233,19 +233,29 @@ class Game {
         this.board.print()
 
 
+
+        // now the first player's turn
         turn = this.turns.PLAYER1
 
 
-        const prompt = "TTT> "
+        // initialize prompt via nodejs readline module
+        const
+            prompt = "TTT> ",
+            readline = require("readline").createInterface({
+                input: process.stdin,
+                output: process.stdout,
+            })
+
         readline.setPrompt(
             this.players[turn].player.prompt(this.players[turn].name),
             prompt.length
         )
+
         readline.prompt()
 
 
 
-
+        // listen for prompt input
         readline.on("line", (line) => {
 
             const input = line.trim()
@@ -254,12 +264,18 @@ class Game {
 
                 const playIndex = this.getPlayIndex(input)
 
+                // Display input error prompt for current player.
                 if (playIndex < 0) {
-                    // Display input error prompt for current player.
-                    console.log("\u001B[41mInvalid move! Please repeat.\u001B[49m")
+
+                    // eslint-disable-next-line no-console
+                    console.log(
+                        "\u001B[41mInvalid move! Please repeat.\u001B[49m"
+                    )
 
                     readline.setPrompt(
-                        this.players[turn].player.prompt(this.players[turn].name),
+                        this.players[turn].player.prompt(
+                            this.players[turn].name
+                        ),
                         prompt.length
                     )
                     readline.prompt()
@@ -319,8 +335,11 @@ class Game {
                 readline.prompt()
 
 
-            } else {
-                // Display input error prompt for current player.
+            }
+            // Display input error prompt for current player.
+            else {
+
+                // eslint-disable-next-line no-console
                 console.log("\u001B[41mWrong input! Please repeat.\u001B[49m")
                 readline.setPrompt(
                     `\u001B[31m${this.players[turn].name} > \u001B[39m`,

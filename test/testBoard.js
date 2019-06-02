@@ -4,7 +4,7 @@
 /* global describe it */
 
 
-var
+const
 
     // needed modules
     assert = require("assert"),
