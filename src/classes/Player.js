@@ -27,7 +27,7 @@ class Player {
      * Minimax algorithm implementation.
      * @param {Board} board an instance of a `Board`
      * @param {number} recursionDepth max level of recursion for minimax
-     * @param {boolean} [isMaximizing] whether the player is maximizing
+     * @param {boolean} isMaximizing whether the player is maximizing
      * @param {string} minimizingSymbol symbol of other player
      * @param {function} callback function to be executed
      */
