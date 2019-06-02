@@ -102,12 +102,11 @@ class Game {
      * Executes a play turn.
      * @param {number} turn integer representing a player in the game queue
      * @param {number} move integer representing index of the selected cell
-     * @param {boolean} [aiMove] whether this move represents AI
      * @returns {Game}
      */
-    playTurn (turn, move, aiMove = false) {
+    playTurn (turn, move) {
         this.board.insert(this.players[turn].symbol, move)
-        if (aiMove) {
+        if (this.players[turn].player.constructor.name === "Computer") {
             console.log(`\u001B[31m${this.players[turn].name} > \u001B[39m${move}`)
         }
         this.board.print()
@@ -253,7 +252,7 @@ class Game {
                     }
 
                     // Piggy back AI's turn.
-                    this.playTurn(turn, this.findBestMove(), true)
+                    this.playTurn(turn, this.findBestMove())
                     turn = this.turns.PLAYER1
                 }
 
