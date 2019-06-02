@@ -13,12 +13,10 @@ const
  */
 class Player {
 
-
     /**
-     * @param {number} depth maximum level of recursion for minimax algorithm
+     *
      */
-    constructor (depth = config.maxDepth) {
-        this.depth = depth
+    constructor () {
         this.nodeMap = new Map()
         this.maximizingScore = 100
         this.minimizingScore = -100

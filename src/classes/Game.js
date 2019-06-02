@@ -107,11 +107,16 @@ class Game {
     playTurn (turn, move) {
         this.board.insert(this.players[turn].symbol, move)
         if (this.players[turn].player.constructor.name === "Computer") {
-            console.log(`\u001B[31m${this.players[turn].name} > \u001B[39m${move}`)
+            // eslint-disable-next-line no-console
+            console.log(
+                this.players[turn].player.prompt(`${this.players[turn].name}`)
+                + this.board.getCoordinatesFromIndex(move)
+            )
         }
         this.board.print()
         return this
     }
+
 
 
 
@@ -156,17 +161,28 @@ class Game {
      * Prints final game score summary.
      * @returns {Game}
      */
-    printGameScore () {
-        console.log("\n=========================\n")
+    printGameScore (turn) {
+
+        // eslint-disable-next-line no-console
+        console.log("\n━━━━━┅┅┅┅━━━━━┅┅┅┅━━━━━┅┅┅┅━━━━━\n")
+
         if (this.board.getOutcome().type === "draw") {
         // eslint-disable-next-line no-console
             console.log("It's a draw!")
         } else {
             // eslint-disable-next-line no-console
-            console.log("Winner:", this.board.getOutcome().winner)
-            // this.board.print()
+            console.log(
+                `Winner: ${
+                    this.players[turn].name
+                } ${
+                    this.players[turn].symbol
+                }`
+            )
         }
-        console.log("\n=========================\n")
+
+        // eslint-disable-next-line no-console
+        console.log("\n━━━━━┅┅┅┅━━━━━┅┅┅┅━━━━━┅┅┅┅━━━━━\n")
+
         return this
     }
 
@@ -178,10 +194,18 @@ class Game {
      */
     start () {
 
-        console.log("\nWelcome to Tic-Tac-Toe! The players are:")
+        // eslint-disable-next-line no-console
+        console.log("\nWelcome to Tic-Tac-Toe! The players are:\n")
 
         this.players.forEach((player) => {
-            console.log(`Player ${player.queue}: ${player.name}`)
+            // eslint-disable-next-line no-console
+            console.log(
+                `Player ${player.queue + 1}: ${
+                    this.players[player.queue].player.prompt(
+                        player.name, false
+                    )
+                }`
+            )
         })
 
 
@@ -195,9 +219,18 @@ class Game {
 
 
         this.board.insert(firstPlayerSymbol, firstMove)
-        this.board.print()
 
-        console.log(`${this.players[turn].name} played first at ${firstMove}\n`)
+
+        // eslint-disable-next-line no-console
+        console.log(
+            `\n\n${this.players[turn].player.prompt(
+                this.players[turn].name
+            )} played first at ${
+                this.board.getCoordinatesFromIndex(firstMove)
+            }`
+        )
+
+        this.board.print()
 
 
         turn = this.turns.PLAYER1
@@ -205,7 +238,7 @@ class Game {
 
         const prompt = "TTT> "
         readline.setPrompt(
-            `\u001B[31m${this.players[turn].name} > \u001B[39m`,
+            this.players[turn].player.prompt(this.players[turn].name),
             prompt.length
         )
         readline.prompt()
@@ -223,9 +256,10 @@ class Game {
 
                 if (playIndex < 0) {
                     // Display input error prompt for current player.
-                    console.log("Invalid move! Please repeat.")
+                    console.log("\u001B[41mInvalid move! Please repeat.\u001B[49m")
+
                     readline.setPrompt(
-                        `\u001B[31m${this.players[turn].name} > \u001B[39m`,
+                        this.players[turn].player.prompt(this.players[turn].name),
                         prompt.length
                     )
                     readline.prompt()
@@ -235,50 +269,59 @@ class Game {
 
                 // Human Player 1 turn.
                 if (turn === this.turns.PLAYER1) {
+
                     this.playTurn(turn, playIndex)
+
+                    // Quit CLI if game is over before AI plays.
+                    if (this.board.getOutcome().gameOver) {
+                        this.printGameScore(turn)
+                        readline.close()
+                        return
+                    }
+
                     turn = this.turns.PLAYER2
                 }
 
                 // Human Player 2 turn.
                 else if (turn === this.turns.PLAYER2) {
+
                     this.playTurn(turn, playIndex)
-                    turn = this.turns.COMPUTER
 
                     // Quit CLI if game is over before AI plays.
                     if (this.board.getOutcome().gameOver) {
-                        this.printGameScore()
+                        this.printGameScore(turn)
                         readline.close()
                         return
                     }
 
+                    turn = this.turns.COMPUTER
+
+
                     // Piggy back AI's turn.
                     this.playTurn(turn, this.findBestMove())
+
+                    // Quit CLI if game is over.
+                    if (this.board.getOutcome().gameOver) {
+                        this.printGameScore(turn)
+                        readline.close()
+                        return
+                    }
+
                     turn = this.turns.PLAYER1
                 }
 
 
-
-
-                // Quit CLI if game is over.
-                if (this.board.getOutcome().gameOver) {
-                    this.printGameScore()
-                    readline.close()
-                    return
-                }
-
-
-
-
                 // Display prompt for current player.
                 readline.setPrompt(
-                    `\u001B[31m${this.players[turn].name} > \u001B[39m`,
+                    this.players[turn].player.prompt(this.players[turn].name),
                     prompt.length
                 )
                 readline.prompt()
 
+
             } else {
                 // Display input error prompt for current player.
-                console.log("Wrong input! Please repeat.")
+                console.log("\u001B[41mWrong input! Please repeat.\u001B[49m")
                 readline.setPrompt(
                     `\u001B[31m${this.players[turn].name} > \u001B[39m`,
                     prompt.length

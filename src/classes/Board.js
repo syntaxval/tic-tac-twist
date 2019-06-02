@@ -166,6 +166,26 @@ class Board {
 
 
     /**
+     * Translates index number mapping to a cell in `Board` to an `Array`
+     *  of human readable coordinates.
+     * @param {number} index
+     * @returns {array} contains x,y coordinates or -1,-1 if not found
+     */
+    getCoordinatesFromIndex (index) {
+        const rows = this.getRows()
+        for (let i = 0; i < rows.length; i++) {
+            for (let j = 0 ; j < rows[i].length; j++) {
+                if (index === rows[i][j]) return [i + 1, j + 1]
+            }
+        }
+        // Coordinates not found
+        return [-1, -1]
+    }
+
+
+
+
+    /**
      * Sets the state in the `Board`s instance.
      * @param {array} state new state that needs to be assigned to `Board`
      * @returns {Board}
