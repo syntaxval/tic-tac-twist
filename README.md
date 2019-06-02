@@ -48,6 +48,7 @@ Execute test suite with:
 
 `npm run test`
 
+The game was tested on `Linux` and `MacOSX` terminals.
 
 ## license
 

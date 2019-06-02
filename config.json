@@ -1,9 +1,9 @@
 {
     "boardSize": 3,
     "symbols": {
-        "human1": "✹",
-        "human2": "✤",
+        "player1": "✹",
+        "player2": "✤",
         "computer": "❤"
     },
-    "maxDepth": "15"
+    "maxDepth": 15
 }

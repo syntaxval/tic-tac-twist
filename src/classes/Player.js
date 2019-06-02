@@ -35,7 +35,7 @@ class Player {
         board,
         recursionDepth = config.maxDepth,
         isMaximizing = true,
-        minimizingSymbol = config.symbol["human1"],
+        minimizingSymbol = config.symbol["player1"],
         callback = () => {}
     ) {
 

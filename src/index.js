@@ -24,12 +24,12 @@ try {
             ),
             new Human(
                 "Brent",
-                config.symbols.human1,
+                config.symbols.player1,
                 utils.prompt.blue
             ),
             new Human(
                 "Josh",
-                config.symbols.human2,
+                config.symbols.player2,
                 utils.prompt.green
             ),
         ]
