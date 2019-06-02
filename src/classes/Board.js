@@ -45,86 +45,107 @@ class Board {
             this.state.push("")
         }
 
+    }
 
 
 
-        // private method returning 2D `Array` of rows of the `Board`
-        this.getRows = function getRows ()  {
 
-            let rowIndices = []
-            let rowIndicesMatrix = []
+    /**
+     * Provides 2D `Array` of the rows of the `Board`
+     * @returns {array}
+     */
+    getRows ()  {
 
-            for (let i = 1; i <= this.cellCount; i++) {
-                rowIndices.push(i-1)
-                if (i % size === 0) {
-                    rowIndicesMatrix.push(rowIndices.slice())
-                    rowIndices = []
-                }
+        let rowIndices = []
+        let rowIndicesMatrix = []
+
+        for (let i = 1; i <= this.cellCount; i++) {
+            rowIndices.push(i-1)
+            if (i % this.size === 0) {
+                rowIndicesMatrix.push(rowIndices.slice())
+                rowIndices = []
             }
-
-            return rowIndicesMatrix
         }
 
-
-
-
-        // private method returning 2D `Array` of columns of the `Board`
-        this.getColumns = function getColumns () {
-            const rows = this.getRows()
-
-            // transpose the rows matrix to get columns matrix
-            // `idx` is really the element value but it is the same as index
-            return rows[0].map((idx) => rows.map((row) => row[idx]))
-        }
+        return rowIndicesMatrix
+    }
 
 
 
 
-        // private method returning 2D `Array` of the diagonals of the `Board`
-        this.getDiagonals = function getDiagonals () {
-            const rows = this.getRows()
+    /**
+     * Provides 2D `Array` of the columns of the `Board`
+     * @returns {array}
+     */
+    getColumns () {
+        const rows = this.getRows()
 
-            // get two diagonals of the square matrix
-            return [
-                rows[0].map((idx) => rows[idx][idx]),
-                rows[0].map((idx) => rows[idx][this.size - idx - 1]),
-            ]
-        }
+        // transpose the rows matrix to get columns matrix
+        // `idx` is really the element value but it is the same as index
+        return rows[0].map((idx) => rows.map((row) => row[idx]))
+    }
 
 
 
 
-        // Private helper method for checking if there is a possible winner
-        // at either row, column or diagonal cells. `matrix` is a 2D `Array`
-        // of indices representing a row, column or diagonal cells.
-        this.declareWinner = function declareWinner (matrix) {
 
-            // compare if all (non-empty) "symbols" are the same at
-            // every matrix[i] `Array`
-            // i.e. if row[0] === row[1] === row[2] or
-            // column[0] === column[3] === column[6] or
-            // diagonal[0] === diagonal[4] === diagonal[8] etc.
-            for (let i = 0; i < matrix.length; i++) {
-                if (matrix[i].every(
-                    (idx) => {
-                        if (this.state[matrix[i][0]] === "") {
-                            return false
-                        }
-                        return this.state[matrix[i][0]] === this.state[idx]
+    /**
+     * Provides 2D `Array` of the diagonals of the `Board`
+     * @returns {array}
+     */
+    getDiagonals () {
+        const rows = this.getRows()
+
+        // get two diagonals of the square matrix
+        return [
+            rows[0].map((idx) => rows[idx][idx]),
+            rows[0].map((idx) => rows[idx][this.size - idx - 1]),
+        ]
+    }
+
+
+
+    /**
+     * Private helper method for checking if there is a possible winner
+     *  at either row, column or diagonal cells. `matrix` is a 2D `Array`
+     *  of indices representing a row, column or diagonal cells.
+     * @param {array} matrix a 2D `Array` representing current `Board` state.
+     */
+    declareWinner (matrix) {
+
+        // compare if all (non-empty) "symbols" are the same at
+        // every matrix[i] `Array`
+        // i.e. if row[0] === row[1] === row[2] or
+        // column[0] === column[3] === column[6] or
+        // diagonal[0] === diagonal[4] === diagonal[8] etc.
+        for (let i = 0; i < matrix.length; i++) {
+            if (matrix[i].every(
+                (idx) => {
+                    if (this.state[matrix[i][0]] === "") {
+                        return false
                     }
-                )) {
-                    return ({
-                        cells: matrix[i],
-                        symbol: this.state[matrix[i][0]],
-                    })
+                    return this.state[matrix[i][0]] === this.state[idx]
                 }
+            )) {
+                return ({
+                    cells: matrix[i],
+                    symbol: this.state[matrix[i][0]],
+                })
             }
-
         }
-
 
     }
 
+
+
+
+    /**
+     * Translates user's input in coordinate format (i.e. 1,1)
+     *  to a corresponding index in the `Array` representing the cell
+     *  in the `Board` instance.
+     * @param {string} input user input in allowed format.
+     * @returns {number}
+     */
     getIndexFromCoordinates (input) {
 
         const
@@ -136,15 +157,24 @@ class Board {
 
         // Check if row is in range as the column access depends on
         // the row availability.
-        if (!rows[coordinates.row - 1]) return null
+        if (!rows[coordinates.row - 1]) return -1
 
         return rows[coordinates.row - 1][coordinates.col - 1]
     }
 
 
+
+
+    /**
+     * Sets the state in the `Board`s instance.
+     * @param {array} state new state that needs to be assigned to `Board`
+     * @returns {Board}
+     */
     setState (state) {
         this.state = state
+        return this
     }
+
 
 
 
@@ -265,8 +295,6 @@ class Board {
 
         // looks like the game has just begun
         if (this.isEmpty()) return false
-
-
 
 
         // state machine - check for possible winner

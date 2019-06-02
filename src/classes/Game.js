@@ -53,106 +53,129 @@ class Game {
             PLAYER2: 2,
         }
 
-
-
-        this.translateFromInput = (input) => {
-            const availableRange = this.board.getEmptyCells(),
-                indexFromCoordinates = this.board.getIndexFromCoordinates(input)
-
-            // Coordinates in range - return corresponding index.
-            if (availableRange.some((index) =>
-                index === indexFromCoordinates
-            )) return indexFromCoordinates
-
-            // Coordinates were out of range.
-            return -1
-        }
-
-
-
-        /**
-         *
-         */
-        this.inputFormatValid = (input) => {
-            const format = new RegExp(/^[1-9]{1}[0-9]?,[1-9]{1}[0-9]?$/)
-            return format.test(input) ? true : false
-        }
-
-
-
-        /**
-         *
-         */
-        this.playTurn = (turn, move, aiMove = false) => {
-            this.board.insert(this.players[turn].symbol, move)
-            if (aiMove) {
-                console.log(`\u001B[31m${this.players[turn].name} > \u001B[39m${move}`)
-            }
-            this.board.print()
-        }
-
-
-
-
-        /**
-         *
-         */
-        this.findBestMove = () => {
-            let bestMove
-
-            this.players[this.turns.COMPUTER].player.minimax(
-                this.board,
-                config.maxDepth,
-                true,
-                this.players[this.turns.PLAYER1].symbol,
-                bestIndex => {
-
-                    const human1 = bestIndex
-
-                    this.players[this.turns.COMPUTER].player.minimax(
-                        this.board,
-                        config.maxDepth,
-                        true,
-                        this.players[this.turns.PLAYER2].symbol,
-                        bestIndex => {
-
-                            const human2 = bestIndex
-
-                            bestMove = Math.max(human1, human2)
-                        }
-                    )
-                }
-            )
-
-            return bestMove
-        }
-
-
-
-
-        /**
-         *
-         */
-        this.printGameScore = () => {
-            console.log("\n=========================\n")
-            if (this.board.getOutcome().type === "draw") {
-            // eslint-disable-next-line no-console
-                console.log("It's a draw!")
-            } else {
-                // eslint-disable-next-line no-console
-                console.log("Winner:", this.board.getOutcome().winner)
-                // this.board.print()
-            }
-            console.log("\n=========================\n")
-        }
-
     }
 
 
 
 
     /**
-     *
+     * Translates (validated for format) user input into an index coresponding
+     *  to the cell on the `Board`.
+     * @param {string} input valid format of a user input string
+     * @returns {number} index of a cell or -1 when out of range
+     */
+    getPlayIndex (input) {
+        const availableRange = this.board.getEmptyCells(),
+            indexFromCoordinates = this.board.getIndexFromCoordinates(input)
+
+        // Coordinates were out of range.
+        if (indexFromCoordinates < 0) {
+            return indexFromCoordinates
+        }
+
+        // Coordinates in range - return corresponding index.
+        if (availableRange.some((index) =>
+            index === indexFromCoordinates
+        )) return indexFromCoordinates
+
+        // Anything else that is not valid.
+        return -1
+    }
+
+
+
+
+    /**
+     * Checks user input against allowed format.
+     * @param {string} input raw user input
+     * @returns {boolean}
+     */
+    inputFormatValid (input) {
+        const format = new RegExp(/^[1-9]{1}[0-9]?,[1-9]{1}[0-9]?$/)
+        return format.test(input) ? true : false
+    }
+
+
+
+
+    /**
+     * Executes a play turn.
+     * @param {number} turn integer representing a player in the game queue
+     * @param {number} move integer representing index of the selected cell
+     * @param {boolean} [aiMove] whether this move represents AI
+     * @returns {Game}
+     */
+    playTurn (turn, move, aiMove = false) {
+        this.board.insert(this.players[turn].symbol, move)
+        if (aiMove) {
+            console.log(`\u001B[31m${this.players[turn].name} > \u001B[39m${move}`)
+        }
+        this.board.print()
+        return this
+    }
+
+
+
+    /**
+     * Finds the best move for the computer by using minimax algorithm.
+     * @returns {number}
+     */
+    findBestMove () {
+        let bestMove
+
+        this.players[this.turns.COMPUTER].player.minimax(
+            this.board,
+            config.maxDepth,
+            true,
+            this.players[this.turns.PLAYER1].symbol,
+            bestIndex => {
+
+                const human1 = bestIndex
+
+                this.players[this.turns.COMPUTER].player.minimax(
+                    this.board,
+                    config.maxDepth,
+                    true,
+                    this.players[this.turns.PLAYER2].symbol,
+                    bestIndex => {
+
+                        const human2 = bestIndex
+
+                        bestMove = Math.max(human1, human2)
+                    }
+                )
+            }
+        )
+
+        return bestMove
+    }
+
+
+
+
+    /**
+     * Prints final game score summary.
+     * @returns {Game}
+     */
+    printGameScore () {
+        console.log("\n=========================\n")
+        if (this.board.getOutcome().type === "draw") {
+        // eslint-disable-next-line no-console
+            console.log("It's a draw!")
+        } else {
+            // eslint-disable-next-line no-console
+            console.log("Winner:", this.board.getOutcome().winner)
+            // this.board.print()
+        }
+        console.log("\n=========================\n")
+        return this
+    }
+
+
+
+
+    /**
+     * Starts the game.
      */
     start () {
 
@@ -197,7 +220,7 @@ class Game {
 
             if (this.inputFormatValid(input)) {
 
-                const playIndex = this.translateFromInput(input)
+                const playIndex = this.getPlayIndex(input)
 
                 if (playIndex < 0) {
                     // Display input error prompt for current player.
@@ -273,6 +296,8 @@ class Game {
             process.exit()
 
         })
+
+        return this
     }
 }
 

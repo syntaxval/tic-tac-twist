@@ -9,12 +9,14 @@ const
 
 
 /**
- * ...
+ * @desc Abstract class representing `Player` entity.
  */
 class Player {
 
 
-    // ...
+    /**
+     * @param {number} depth maximum level of recursion for minimax algorithm
+     */
     constructor (depth = config.maxDepth) {
         this.depth = depth
         this.nodeMap = new Map()
@@ -23,7 +25,14 @@ class Player {
     }
 
 
-    // ...
+    /**
+     * Minimax algorithm implementation.
+     * @param {Board} board an instance of a `Board`
+     * @param {number} recursionDepth max level of recursion for minimax
+     * @param {boolean} [isMaximizing] whether the player is maximizing
+     * @param {string} minimizingSymbol symbol of other player
+     * @param {function} callback function to be executed
+     */
     minimax (
         board,
         recursionDepth = config.maxDepth,
