@@ -125,6 +125,23 @@ class Board {
 
     }
 
+    getIndexFromCoordinates (input) {
+
+        const
+            rows = this.getRows(),
+            coordinates = {
+                row: parseInt(input.split(",")[0], 10),
+                col: parseInt(input.split(",")[1], 10),
+            }
+
+        // Check if row is in range as the column access depends on
+        // the row availability.
+        if (!rows[coordinates.row - 1]) return null
+
+        return rows[coordinates.row - 1][coordinates.col - 1]
+    }
+
+
     setState (state) {
         this.state = state
     }
@@ -275,7 +292,6 @@ class Board {
 
 
         // looks like a "draw"
-        // TODO: revisit later. Maybe this check can happen elsewhere
         if (this.isFull()) return ({ winner: {}, type: "draw", gameOver: true })
 
 

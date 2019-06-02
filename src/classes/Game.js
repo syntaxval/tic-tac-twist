@@ -1,4 +1,8 @@
-const config = require("../../config")
+const config = require("../../config"),
+    readline = require("readline").createInterface({
+        input: process.stdin,
+        output: process.stdout,
+    })
 
 
 
@@ -14,10 +18,13 @@ class Game {
             throw new Error("First argument needs to be of type `Board`.")
         }
 
+        // Allow only instances of Array of Players.
         if (!Array.isArray(players)) {
             throw new Error("Second argument needs to be of type `Array`.")
         }
 
+
+        //  Setup players in the game.
         this.players = players.map((player, idx) => {
 
             if (!(
@@ -34,67 +41,120 @@ class Game {
             }
         })
 
+
+        // Board
         this.board = board
 
+
+        // Map player tuns to player index in the queue.
         this.turns = {
             COMPUTER: 0,
             PLAYER1: 1,
             PLAYER2: 2,
         }
-    }
 
-    isGameOver () {
-        return this.board.getOutcome().gameOver
-    }
 
-    printGameScore () {
-        console.log("\n=========================\n")
-        if (this.board.getOutcome().type === "draw") {
-        // eslint-disable-next-line no-console
-            console.log("It's a draw!")
-        } else {
-            // eslint-disable-next-line no-console
-            console.log("Winner:", this.board.getOutcome().winner)
-            // this.board.print()
+
+        this.translateFromInput = (input) => {
+            const availableRange = this.board.getEmptyCells(),
+                indexFromCoordinates = this.board.getIndexFromCoordinates(input)
+
+            // Coordinates in range - return corresponding index.
+            if (availableRange.some((index) =>
+                index === indexFromCoordinates
+            )) return indexFromCoordinates
+
+            // Coordinates were out of range.
+            return -1
         }
-        console.log("\n=========================\n")
-    }
 
 
-    findBestMove () {
 
-        let bestMove
+        /**
+         *
+         */
+        this.inputFormatValid = (input) => {
+            const format = new RegExp(/^[1-9]{1}[0-9]?,[1-9]{1}[0-9]?$/)
+            return format.test(input) ? true : false
+        }
 
-        this.players[this.turns.COMPUTER].player.minimax(
-            this.board,
-            config.maxDepth,
-            true,
-            this.players[this.turns.PLAYER1].symbol,
-            bestIndex => {
 
-                const human1 = bestIndex
 
-                this.players[this.turns.COMPUTER].player.minimax(
-                    this.board,
-                    config.maxDepth,
-                    true,
-                    this.players[this.turns.PLAYER2].symbol,
-                    bestIndex => {
-
-                        const human2 = bestIndex
-
-                        bestMove = Math.max(human1, human2)
-                    }
-                )
+        /**
+         *
+         */
+        this.playTurn = (turn, move, aiMove = false) => {
+            this.board.insert(this.players[turn].symbol, move)
+            if (aiMove) {
+                console.log(`\u001B[31m${this.players[turn].name} > \u001B[39m${move}`)
             }
-        )
+            this.board.print()
+        }
 
-        return bestMove
+
+
+
+        /**
+         *
+         */
+        this.findBestMove = () => {
+            let bestMove
+
+            this.players[this.turns.COMPUTER].player.minimax(
+                this.board,
+                config.maxDepth,
+                true,
+                this.players[this.turns.PLAYER1].symbol,
+                bestIndex => {
+
+                    const human1 = bestIndex
+
+                    this.players[this.turns.COMPUTER].player.minimax(
+                        this.board,
+                        config.maxDepth,
+                        true,
+                        this.players[this.turns.PLAYER2].symbol,
+                        bestIndex => {
+
+                            const human2 = bestIndex
+
+                            bestMove = Math.max(human1, human2)
+                        }
+                    )
+                }
+            )
+
+            return bestMove
+        }
+
+
+
+
+        /**
+         *
+         */
+        this.printGameScore = () => {
+            console.log("\n=========================\n")
+            if (this.board.getOutcome().type === "draw") {
+            // eslint-disable-next-line no-console
+                console.log("It's a draw!")
+            } else {
+                // eslint-disable-next-line no-console
+                console.log("Winner:", this.board.getOutcome().winner)
+                // this.board.print()
+            }
+            console.log("\n=========================\n")
+        }
+
     }
 
 
-    start () {
 
+
+    /**
+     *
+     */
+    start () {
 
         console.log("\nWelcome to Tic-Tac-Toe! The players are:")
 
@@ -103,9 +163,7 @@ class Game {
         })
 
 
-        let
-            turn = this.turns.COMPUTER,
-            bestMove
+        let turn = this.turns.COMPUTER
 
         const
             firstPlayerSymbol = this.players[turn].symbol,
@@ -123,62 +181,91 @@ class Game {
         turn = this.turns.PLAYER1
 
 
-        const rl = require("readline").createInterface({
-            input: process.stdin,
-            output: process.stdout,
-        })
-
         const prompt = "TTT> "
-        rl.setPrompt(
+        readline.setPrompt(
             `\u001B[31m${this.players[turn].name} > \u001B[39m`,
             prompt.length
         )
-        rl.prompt()
-
-        rl.on("line", (line) => {
+        readline.prompt()
 
 
 
 
-            if (turn === this.turns.PLAYER1) {
-                this.board.insert(this.players[turn].symbol, line.trim())
-                this.board.print()
-                turn = this.turns.PLAYER2
-            } else {
-                this.board.insert(this.players[turn].symbol, line.trim())
-                this.board.print()
+        readline.on("line", (line) => {
 
-                if (this.isGameOver()) {
-                    this.printGameScore()
-                    rl.close()
+            const input = line.trim()
+
+            if (this.inputFormatValid(input)) {
+
+                const playIndex = this.translateFromInput(input)
+
+                if (playIndex < 0) {
+                    // Display input error prompt for current player.
+                    console.log("Invalid move! Please repeat.")
+                    readline.setPrompt(
+                        `\u001B[31m${this.players[turn].name} > \u001B[39m`,
+                        prompt.length
+                    )
+                    readline.prompt()
                     return
                 }
 
-                // AI plays here too
-                turn = this.turns.COMPUTER
 
-                bestMove = this.findBestMove()
-                this.board.insert(
-                    this.players[turn].symbol,
-                    bestMove
+                // Human Player 1 turn.
+                if (turn === this.turns.PLAYER1) {
+                    this.playTurn(turn, playIndex)
+                    turn = this.turns.PLAYER2
+                }
+
+                // Human Player 2 turn.
+                else if (turn === this.turns.PLAYER2) {
+                    this.playTurn(turn, playIndex)
+                    turn = this.turns.COMPUTER
+
+                    // Quit CLI if game is over before AI plays.
+                    if (this.board.getOutcome().gameOver) {
+                        this.printGameScore()
+                        readline.close()
+                        return
+                    }
+
+                    // Piggy back AI's turn.
+                    this.playTurn(turn, this.findBestMove(), true)
+                    turn = this.turns.PLAYER1
+                }
+
+
+
+
+                // Quit CLI if game is over.
+                if (this.board.getOutcome().gameOver) {
+                    this.printGameScore()
+                    readline.close()
+                    return
+                }
+
+
+
+
+                // Display prompt for current player.
+                readline.setPrompt(
+                    `\u001B[31m${this.players[turn].name} > \u001B[39m`,
+                    prompt.length
                 )
-                console.log(`\u001B[31m${this.players[turn].name} > \u001B[39m${bestMove}`)
-                this.board.print()
+                readline.prompt()
 
-                turn = this.turns.PLAYER1
-
-
+            } else {
+                // Display input error prompt for current player.
+                console.log("Wrong input! Please repeat.")
+                readline.setPrompt(
+                    `\u001B[31m${this.players[turn].name} > \u001B[39m`,
+                    prompt.length
+                )
+                readline.prompt()
             }
 
-            if (this.isGameOver()) {
-                this.printGameScore()
-                rl.close()
-                return
-            }
 
 
-            rl.setPrompt(`\u001B[31m${this.players[turn].name} > \u001B[39m`, prompt.length)
-            rl.prompt()
 
         }).on("close", () => {
 
@@ -190,4 +277,7 @@ class Game {
 }
 
 
+
+
+// ...
 module.exports = Game

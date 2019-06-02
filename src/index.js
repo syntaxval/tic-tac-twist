@@ -29,4 +29,7 @@ try {
     // eslint-disable-next-line no-console
     console.log(error.message)
 
+    //eslint-disable-next-line no-process-exit
+    process.exit()
+
 }

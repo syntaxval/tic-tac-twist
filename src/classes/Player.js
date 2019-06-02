@@ -67,131 +67,80 @@ class Player {
 
         const
             // get all possible "choices" for a "move"
-            possibleMoves = board.getEmptyCells()
+            possibleMoves = board.getEmptyCells(),
+            findBestScore = (isMaximizing = true) => {
+
+                let best = isMaximizing ?
+                    this.minimizingScore : this.maximizingScore
+
+
+                possibleMoves.forEach((idx) => {
+                    childBoard.insert(config.symbols["computer"], idx)
+
+
+                    const nodeValue = this.minimax(
+                        childBoard,
+                        recursionDepth - 1,
+                        isMaximizing,
+                        minimizingSymbol,
+                        callback
+                    )
+
+
+                    best = isMaximizing ?
+                        Math.max(best, nodeValue) :
+                        Math.min(best, nodeValue)
 
 
 
+                    // initial call of minimax
+                    if (recursionDepth === config.maxDepth) {
+                        const moves = this.nodeMap.has(nodeValue) ?
+                            `${this.nodeMap.get(nodeValue)},${idx}` : idx
+                        this.nodeMap.set(nodeValue, moves)
+                    }
+
+                })
+
+                // initial call of minimax
+                if (recursionDepth === config.maxDepth) {
+
+                    const bestNode = this.nodeMap.get(best)
+
+                    let bestFirst
+
+                    if (typeof bestNode === "string") {
+                        bestFirst = utils.draw(bestNode.split(","))
+                    } else {
+                        bestFirst = bestNode
+                    }
+
+                    callback(bestFirst)
+                    return bestFirst
+
+                }
+
+                // recursive call case
+                return best
+
+            }
 
 
 
 
         // Computer's turn.
         if (isMaximizing) {
-
-            let best = this.minimizingScore
-
-
-            possibleMoves.forEach((idx) => {
-                childBoard.insert(config.symbols["computer"], idx)
-
-
-                const nodeValue = this.minimax(
-                    childBoard,
-                    recursionDepth - 1,
-                    false,
-                    minimizingSymbol,
-                    callback
-                )
-
-
-                best = Math.max(
-                    best,
-                    nodeValue
-                )
-
-
-                // initial call of minimax
-                if (recursionDepth === config.maxDepth) {
-                    const moves = this.nodeMap.has(nodeValue) ?
-                        `${this.nodeMap.get(nodeValue)},${idx}` : idx
-                    this.nodeMap.set(nodeValue, moves)
-                }
-
-            })
-
-
-
-
-            // initial call of minimax
-            if (recursionDepth === config.maxDepth) {
-                const bestNode = this.nodeMap.get(best)
-
-                let bestFirst
-
-                if (typeof bestNode === "string") {
-                    bestFirst = utils.draw(bestNode.split(","))
-                } else {
-                    bestFirst = bestNode
-                }
-
-                callback(bestFirst)
-                return bestFirst
-
-            }
-
-            // recursive call case
-            return best
-
-
+            return findBestScore(isMaximizing)
         }
+
 
 
 
         // Human's turn.
         if(!isMaximizing) {
-
-            let best = this.maximizingScore
-
-
-            possibleMoves.forEach((idx) => {
-                childBoard.insert(minimizingSymbol, idx)
-
-                const nodeValue = this.minimax(
-                    childBoard,
-                    recursionDepth - 1,
-                    true,
-                    minimizingSymbol,
-                    callback
-                )
-
-
-                best = Math.min(
-                    best,
-                    nodeValue
-                )
-
-                // initial call of minimax
-                if (recursionDepth === config.maxDepth) {
-                    const moves = this.nodeMap.has(nodeValue) ?
-                        `${this.nodeMap.get(nodeValue)},${idx}` : idx
-                    this.nodeMap.set(nodeValue, moves)
-                }
-
-            })
-
-
-
-            // initial call of minimax
-            if (recursionDepth === config.maxDepth) {
-
-                const bestNode = this.nodeMap.get(best)
-                let bestFirst
-
-                if (typeof bestNode === "string") {
-                    bestFirst = utils.draw(bestNode.split(","))
-                } else {
-                    bestFirst = bestNode
-                }
-
-                callback(bestFirst)
-                return bestFirst
-
-            }
-
-            // recursive call case
-            return best
-
+            return findBestScore(!isMaximizing)
         }
+
 
     }
 
