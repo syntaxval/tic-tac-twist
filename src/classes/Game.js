@@ -169,7 +169,9 @@ class Game {
             // eslint-disable-next-line no-console
             console.log(
                 `Winner: ${
-                    this.players[turn].name
+                    this.players[turn].player.prompt(
+                        this.players[turn].name, false
+                    )
                 } ${
                     this.players[turn].symbol
                 }`
@@ -342,7 +344,9 @@ class Game {
                 // eslint-disable-next-line no-console
                 console.log("\u001B[41mWrong input! Please repeat.\u001B[49m")
                 readline.setPrompt(
-                    `\u001B[31m${this.players[turn].name} > \u001B[39m`,
+                    this.players[turn].player.prompt(
+                        this.players[turn].name
+                    ),
                     prompt.length
                 )
                 readline.prompt()
