@@ -13,21 +13,21 @@ const draw = (arr) => arr[randomInt() % arr.length]
 // collection of prompt functions
 const prompt = {
     blue: function (text, displayPostfix = true) {
-        return `\u001b[30m\u001b[1m\u001b[44m${text}${
+        return `\u001b[1m\u001b[34m${text}${
             displayPostfix ? " >" : ""
-        }\u001b[49m\u001b[22m\u001b[39m `
+        }\u001b[39m\u001b[22m `
     },
 
     green: function (text, displayPostfix = true) {
-        return `\u001b[30m\u001b[1m\u001b[42m${text}${
+        return `\u001b[1m\u001b[32m${text}${
             displayPostfix ? " >" : ""
-        }\u001b[49m\u001b[22m\u001b[39m `
+        }\u001b[39m\u001b[22m `
     },
 
-    yellow: function (text, displayPostfix = true) {
-        return `\u001b[30m\u001b[1m\u001b[45m${text}${
+    magenta: function (text, displayPostfix = true) {
+        return `\u001b[1m\u001b[35m${text}${
             displayPostfix ? " >" : ""
-        }\u001b[49m\u001b[22m\u001b[39m `
+        }\u001b[39m\u001b[22m `
     },
 }
 

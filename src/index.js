@@ -20,7 +20,7 @@ try {
             new Computer(
                 "Zalgo",
                 config.symbols.computer,
-                utils.prompt.yellow
+                utils.prompt.magenta
             ),
             new Human(
                 "Brent",

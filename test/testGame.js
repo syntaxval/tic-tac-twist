@@ -26,7 +26,7 @@ describe("Test Game methods.", () => {
             new Computer(
                 "Zalgo",
                 config.symbols.computer,
-                utils.prompt.yellow
+                utils.prompt.magenta
             ),
             new Human(
                 "Brent",
