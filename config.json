@@ -1,9 +1,10 @@
 {
-    "boardSize": 3,
+    "boardSize": 5,
     "symbols": {
         "player1": "✹",
         "player2": "✤",
         "computer": "❤"
     },
-    "maxDepth": 15
+    "maxDepth": 15,
+    "gameType": "classic"
 }

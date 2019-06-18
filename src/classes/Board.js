@@ -105,6 +105,20 @@ class Board {
 
 
 
+    getFourCorners () {
+
+
+
+        return [[
+            0,
+            config.boardSize - 1,
+            this.state.length - config.boardSize,
+            this.state.length - 1,
+        ]]
+    }
+
+
+
     /**
      * Private helper method for checking if there is a possible winner
      *  at either row, column or diagonal cells. `matrix` is a 2D `Array`
@@ -133,6 +147,16 @@ class Board {
                 })
             }
         }
+
+        // if (matrix[0][0] !== "" &&
+        //     matrix[0][0] === matrix[0][matrix.length - 1] ===
+        //     matrix[matrix.length - 1][0] ===
+        //     matrix[matrix.length - 1][matrix.length - 1]) {
+        //     return ({
+        //         cells: "Four corners",
+        //         symbol: this.state[0][0],
+        //     })
+        // }
 
     }
 
@@ -309,7 +333,7 @@ class Board {
 
     /**
      * Checks for a possible win or a draw.
-     * @returns {boolean}
+     * @returns {Object}
      */
     getOutcome () {
 
@@ -338,6 +362,11 @@ class Board {
         // "diagonal" winner was found
         if (winner) return ({ winner, type: "diagonal", gameOver: true })
 
+
+        if (config.gameType === "ext") {
+            winner = this.declareWinner(this.getFourCorners())
+            if (winner) return ({winner, type: "fourCorners", gameOver: true })
+        }
 
         // looks like a "draw"
         if (this.isFull()) return ({ winner: {}, type: "draw", gameOver: true })
